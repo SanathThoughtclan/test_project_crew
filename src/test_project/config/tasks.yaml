@@ -1,17 +1,46 @@
-research_task:
-  description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is 2024.
-  expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+# research_task:
+#   description: >
+#     Conduct a thorough research about {topic}
+#     Make sure you find any interesting and relevant information given
+#     the current year is 2024.
+#   expected_output: >
+#     A list with 10 bullet points of the most relevant information about {topic}
+#   agent: researcher
 
-reporting_task:
+# reporting_task:
+#   description: >
+#     Review the context you got and expand each topic into a full section for a report.
+#     Make sure the report is detailed and contains any and all relevant information.
+#   expected_output: >
+#     A fully fledged report with the main topics, each with a full section of information.
+#     Formatted as markdown without '```'
+#   agent: reporting_analyst
+
+code_task:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    You will create a game using Python, these are the instructions:
+    {game}
   expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    Your final answer must be the full Python code, only the Python code and nothing else.
+  agent: senior_engineer
+  
+
+review_task:
+  description: >
+    You will create a game using Python, these are the instructions:
+    {game}
+    Using the code you got, check for errors. Check for logic errors, syntax errors,
+    missing imports, variable declarations, mismatched brackets, and security vulnerabilities.
+  expected_output: >
+    Your final answer must be the full Python code, only the Python code and nothing else.
+  agent: qa_engineer
+
+evaluate_task:
+  description: >
+    You are helping create a game using Python, these are the instructions:
+    {game}
+    You will look over the code to ensure that it is complete and does the job it is supposed to do.
+  expected_output: >
+    Your final answer must be the full Python code, only the Python code and nothing else.
+  agent: chief_qa_engineer
+  

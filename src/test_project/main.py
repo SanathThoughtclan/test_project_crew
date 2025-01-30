@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import sys
 import warnings
-
+import yaml
 from test_project.crew import TestProject
+from test_project.tools.leaderboard_tool import LeaderboardTool
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -11,14 +12,45 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 # Replace with inputs you want to test with, it will automatically
 # interpolate any tasks and agents information
 
+# def run():
+#     """
+#     Run the crew.
+#     """
+#     inputs = {
+#         'topic': 'AI LLMs'
+#     }
+#     TestProject().crew().kickoff(inputs=inputs)
+
+
+
 def run():
-    """
-    Run the crew.
-    """
-    inputs = {
-        'topic': 'AI LLMs'
-    }
-    TestProject().crew().kickoff(inputs=inputs)
+    print("## Welcome to the Game! ##")
+    with open('src/test_project/config/games.yaml', 'r', encoding='utf-8') as file:
+        examples = yaml.safe_load(file)
+
+    inputs = {'game': examples['example_snake']}
+    print("## Beginning build process ##")
+
+    # Get the crew instance
+    project = TestProject()
+    crew_instance = project.crew()
+    
+    # Run the crew and get the result
+    final_result = crew_instance.kickoff(inputs=inputs)
+    
+    print("\n\n========================")
+    print("Final code for the game:")
+    print("========================\n")
+    
+    # Extract the actual code from the last task execution
+    if final_result:
+        print(final_result)
+    else:
+        # Fallback to Chief QA Engineer's output if needed
+        print(crew_instance.tasks[-1].output)
+
+
+
 
 
 def train():

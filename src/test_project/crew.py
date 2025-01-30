@@ -1,62 +1,105 @@
 from crewai import Agent, Crew, Process, Task
-from crewai.project import CrewBase, agent, crew, task
-
-# If you want to run a snippet of code before or after the crew starts, 
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+from crewai.project import CrewBase, agent, crew, task,after_kickoff
+from test_project.tools.leaderboard_tool import LeaderboardTool
+import time
 
 @CrewBase
 class TestProject():
-	"""TestProject crew"""
+    """TestProject crew"""
 
-	# Learn more about YAML configuration files here:
-	# Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-	# Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
-	agents_config = 'config/agents.yaml'
-	tasks_config = 'config/tasks.yaml'
+    agents_config = 'config/agents.yaml'
+    tasks_config = 'config/tasks.yaml'
+    tracker = LeaderboardTool()  # Single shared instance
 
-	# If you would like to add tools to your agents, you can learn more about it here:
-	# https://docs.crewai.com/concepts/agents#agent-tools
-	@agent
-	def researcher(self) -> Agent:
-		return Agent(
-			config=self.agents_config['researcher'],
-			verbose=True
-		)
 
-	@agent
-	def reporting_analyst(self) -> Agent:
-		return Agent(
-			config=self.agents_config['reporting_analyst'],
-			verbose=True
-		)
+    @agent
+    def senior_engineer(self) -> Agent:
+                return Agent(
+            config=self.agents_config['senior_engineer'],
+            tools=[],  # Use shared instance
+            allow_delegation=False,
+            verbose=True,
+        )
 
-	# To learn more about structured task outputs, 
-	# task dependencies, and task callbacks, check out the documentation:
-	# https://docs.crewai.com/concepts/tasks#overview-of-a-task
-	@task
-	def research_task(self) -> Task:
-		return Task(
-			config=self.tasks_config['research_task'],
-		)
+    @agent
+    def qa_engineer(self) -> Agent:
+                return Agent(
+            config=self.agents_config['qa_engineer'],
+            tools=[],  # Use shared instance
+            allow_delegation=False,
+            verbose=True,
+        )  
 
-	@task
-	def reporting_task(self) -> Task:
-		return Task(
-			config=self.tasks_config['reporting_task'],
-			output_file='report.md'
-		)
+    @agent
+    def chief_qa_engineer(self) -> Agent:
+                return Agent(
+            config=self.agents_config["chief_qa_engineer"],
+            tools=[],  # Use shared instance
+            allow_delegation=False,
+            verbose=True,
+        )
 
-	@crew
-	def crew(self) -> Crew:
-		"""Creates the TestProject crew"""
-		# To learn how to add knowledge sources to your crew, check out the documentation:
-		# https://docs.crewai.com/concepts/knowledge#what-is-knowledge
+    # In all task definitions, modify the callback lambdas like this:
 
-		return Crew(
-			agents=self.agents, # Automatically created by the @agent decorator
-			tasks=self.tasks, # Automatically created by the @task decorator
-			process=Process.sequential,
-			verbose=True,
-			# process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
-		)
+    @task
+    def code_task(self) -> Task:
+        start_time = time.time()
+        task = Task(
+            config=self.tasks_config['code_task'],
+            agent=self.senior_engineer(),
+            # Add parameter to lambda to accept the output
+            callback=lambda output: self.tracker._run(
+                agent_name="senior_engineer",
+                execution_time=time.time() - start_time
+            )
+        )
+        return task
+
+    @task
+    def review_task(self) -> Task:
+        start_time = time.time()
+        task = Task(
+            config=self.tasks_config['review_task'],
+            agent=self.qa_engineer(),
+            # Add parameter to lambda to accept the output
+            callback=lambda output: self.tracker._run(
+                agent_name="qa_engineer",
+                execution_time=time.time() - start_time
+            )
+        )
+        return task
+
+    @task
+    def evaluate_task(self) -> Task:
+        start_time = time.time()
+        task = Task(
+            config=self.tasks_config['evaluate_task'],
+            agent=self.chief_qa_engineer(),
+            # Add parameter to lambda to accept the output
+            callback=lambda output: self.tracker._run(
+                agent_name="chief_qa_engineer",
+                execution_time=time.time() - start_time
+            )
+        )
+        return task
+
+    @crew
+    def crew(self) -> Crew:
+        """Creates the TestProject crew"""
+        print(f"Agents in the crew: {self.agents}")
+        print(f"Tools in the crew: {self.tasks}")
+        return Crew(
+            agents=self.agents, 
+            tasks=self.tasks, 
+            process=Process.sequential,
+            verbose=True,
+        )
+
+    @after_kickoff
+    def display_leaderboard(self, result) -> None:
+        """Display leaderboard after execution"""
+        print("\n\n========================")
+        print("Agent Performance Metrics:")
+        print("==========================")
+        print(self.tracker.display_leaderboard())
+        print("==========================\n\n")

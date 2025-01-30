@@ -1,0 +1,99 @@
+example_snake: >  
+  """Snake Game Description  
+    Objective:  
+      The objective of the Snake game is for the player to control a snake that moves across the game area, consuming food to grow longer while avoiding collisions with walls and itself. The game ends when the snake collides with a wall or its own body.  
+
+    Game Mechanics: 
+
+      Game Area:  
+        The game takes place in a rectangular grid, typically represented as a 20x20 matrix.  
+        The grid contains cells where the snake moves and food can spawn randomly.  
+
+      Snake Movement:  
+        The snake is controlled by the player using keyboard input such as arrow keys or WASD keys.  
+        The snake moves continuously in the last direction chosen by the player.  
+        The movement is discrete, with the snake advancing one cell per frame or tick.  
+        The snake cannot move in the opposite direction of its current movement.  
+        The snake's body consists of connected segments that follow the movement of the head.  
+
+      Growth Mechanism: 
+        The snake starts with a default length of three segments.  
+        Each time the snake consumes food, it grows longer by adding one segment to its body.  
+        The new segment is added to the end of the snake's tail.  
+
+      Food:  
+        Food spawns randomly at an unoccupied position in the grid, ensuring it does not appear on the snake's body.  
+        Each food item can only be consumed once.  
+        After consumption, a new piece of food spawns at another random position on the grid.  
+
+      Collisions:  
+        The game ends when the snake collides with any of the following:-
+          Walls, which are the boundaries of the game area.  
+          Self, when the snake's head collides with its own body.  
+
+    Game Rules:  
+
+      Movement Rules:  
+        The snake moves continuously in the last selected direction.  
+        The player can change the direction mid-game using input keys.  
+        Opposite direction movement is not allowed, such as moving left immediately after moving right.  
+
+      Boundary Conditions:  
+        The edges of the grid act as walls. If the snake crosses these boundaries, the game is over.  
+
+      Self-Collision:  
+        The game ends if the snake's head collides with any part of its body.  
+
+    Scoring System:
+
+      Food Consumption:  
+        The player earns points when the snake consumes food.  
+        The typical scoring system awards ten points per food item consumed.  
+        The score increases with each successful food consumption.  
+
+      Time and Speed-Based Scoring:  
+        Additional points can be awarded based on survival time.  
+        As the game progresses, the speed of the snake can increase, making the game more challenging.  
+
+      High Score System:  
+        The current score should be displayed during gameplay.  
+        A high-score system can be implemented to keep track of the highest score achieved across multiple playthroughs.    
+
+    Game Features:  
+
+      Game Over Condition:  
+        When the snake collides with a wall or itself, the game displays a "Game Over" message.  
+        An option to restart the game should be provided.  
+
+      Visual Representation:
+        The snake can be represented as green squares or blocks.  
+        Food can be represented as red circles or blocks.  
+
+      Speed Control:
+        The game can have adjustable speed levels that increase as the player progresses.  
+        Different levels of difficulty can be implemented.  
+
+      Sound Effects:  
+        A sound effect can be played when food is eaten.  
+        Another sound effect can be played when the game ends.  
+
+      Controls:
+        Up movement is controlled by the up arrow key or 'W' key.  
+        Down movement is controlled by the down arrow key or 'S' key.  
+        Left movement is controlled by the left arrow key or 'A' key.  
+        Right movement is controlled by the right arrow key or 'D' key.  
+
+    Additional Enhancements:  
+
+      Pause and Resume Functionality: 
+        The player should be able to pause and resume the game.  
+
+      Multiple Levels:
+        The game should have increasing difficulty with different grid sizes.  
+
+      Themes and Skins:
+        Different visual styles should be available for the snake and food.  
+
+      Obstacles:
+        Static or moving obstacles can be added to increase the challenge.
+  """
