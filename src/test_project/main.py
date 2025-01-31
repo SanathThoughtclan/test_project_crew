@@ -36,7 +36,7 @@ def run():
     crew_instance = project.crew()
     
     # Run the crew and get the result
-    final_result = crew_instance.kickoff()
+    final_result = crew_instance.kickoff(inputs={})
     
     print("\n\n========================")
     print("Final code for the game:")

@@ -111,9 +111,6 @@ class TestProject():
             agents=self.agents,
             tasks=self.tasks,
             process=Process.sequential,
-            inputs={
-                'game': self.games[self.selected_game]
-            },  # Auto-injects the game content
             verbose=True,
         )
 
