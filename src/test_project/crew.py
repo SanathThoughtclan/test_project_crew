@@ -2,6 +2,8 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task,after_kickoff
 from test_project.tools.leaderboard_tool import LeaderboardTool
 import time
+import yaml
+
 
 @CrewBase
 class TestProject():
@@ -11,6 +13,16 @@ class TestProject():
     tasks_config = 'config/tasks.yaml'
     tracker = LeaderboardTool()  # Single shared instance
 
+    def __init__(self):
+        with open('src/test_project/config/games.yaml', 'r') as file:
+            self.games = yaml.safe_load(file)
+        self.selected_game = 'example_snake'
+
+    def _inject_game_instructions(self, task_config):
+        """Inject game instructions into task descriptions"""
+        game_content = self.games[self.selected_game]
+        task_config['description'] = task_config['description'].format(game=game_content)
+        return task_config
 
     @agent
     def senior_engineer(self) -> Agent:
@@ -44,8 +56,11 @@ class TestProject():
     @task
     def code_task(self) -> Task:
         start_time = time.time()
+        task_config = self._inject_game_instructions(
+            self.tasks_config['code_task'].copy()
+        )
         task = Task(
-            config=self.tasks_config['code_task'],
+            config=task_config,
             agent=self.senior_engineer(),
             # Add parameter to lambda to accept the output
             callback=lambda output: self.tracker._run(
@@ -58,8 +73,11 @@ class TestProject():
     @task
     def review_task(self) -> Task:
         start_time = time.time()
+        task_config = self._inject_game_instructions(
+            self.tasks_config['review_task'].copy()
+        )
         task = Task(
-            config=self.tasks_config['review_task'],
+            config=task_config,
             agent=self.qa_engineer(),
             # Add parameter to lambda to accept the output
             callback=lambda output: self.tracker._run(
@@ -72,8 +90,11 @@ class TestProject():
     @task
     def evaluate_task(self) -> Task:
         start_time = time.time()
+        task_config = self._inject_game_instructions(
+            self.tasks_config['evaluate_task'].copy()
+        )
         task = Task(
-            config=self.tasks_config['evaluate_task'],
+            config=task_config,
             agent=self.chief_qa_engineer(),
             # Add parameter to lambda to accept the output
             callback=lambda output: self.tracker._run(
@@ -85,15 +106,24 @@ class TestProject():
 
     @crew
     def crew(self) -> Crew:
-        """Creates the TestProject crew"""
-        print(f"Agents in the crew: {self.agents}")
-        print(f"Tools in the crew: {self.tasks}")
+        """Creates the Crew with preloaded game instructions"""
         return Crew(
-            agents=self.agents, 
-            tasks=self.tasks, 
+            agents=self.agents,
+            tasks=self.tasks,
             process=Process.sequential,
+            inputs={
+                'game': self.games[self.selected_game]
+            },  # Auto-injects the game content
             verbose=True,
         )
+
+    def set_game(self, game_name: str):
+        """Optional method to change games dynamically"""
+        if game_name in self.games:
+            self.selected_game = game_name
+        else:
+            raise ValueError(f"Game '{game_name}' not found in config")
+        
 
     @after_kickoff
     def display_leaderboard(self, result) -> None:

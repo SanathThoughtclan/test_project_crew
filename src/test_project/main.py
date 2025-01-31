@@ -25,18 +25,18 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
 def run():
     print("## Welcome to the Game! ##")
-    with open('src/test_project/config/games.yaml', 'r', encoding='utf-8') as file:
-        examples = yaml.safe_load(file)
+    # with open('src/test_project/config/games.yaml', 'r', encoding='utf-8') as file:
+    #     examples = yaml.safe_load(file)
 
-    inputs = {'game': examples['example_snake']}
-    print("## Beginning build process ##")
+    # inputs = {'game': examples['example_snake']}
+    # print("## Beginning build process ##")
 
     # Get the crew instance
     project = TestProject()
     crew_instance = project.crew()
     
     # Run the crew and get the result
-    final_result = crew_instance.kickoff(inputs=inputs)
+    final_result = crew_instance.kickoff()
     
     print("\n\n========================")
     print("Final code for the game:")
