@@ -17,11 +17,13 @@ class TestProject():
         with open('src/test_project/config/games.yaml', 'r') as file:
             self.games = yaml.safe_load(file)
         self.selected_game = 'example_snake'
+        # Pre-inject game instructions at initialization
+        self.game_content = self.games[self.selected_game]
+        print(f"Loaded game content: {self.game_content}")  # Debug line
 
     def _inject_game_instructions(self, task_config):
-        """Inject game instructions into task descriptions"""
-        game_content = self.games[self.selected_game]
-        task_config['description'] = task_config['description'].format(game=game_content)
+        """Inject PRELOADED game instructions into task descriptions"""
+        task_config['description'] = task_config['description'].replace('{game}', self.game_content)
         return task_config
 
     @agent
@@ -105,6 +107,7 @@ class TestProject():
         return task
 
     @crew
+        
     def crew(self) -> Crew:
         """Creates the Crew with preloaded game instructions"""
         return Crew(
@@ -112,6 +115,8 @@ class TestProject():
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,
+            # Force empty inputs schema
+            inputs={}
         )
 
     def set_game(self, game_name: str):
